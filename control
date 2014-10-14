@@ -1,0 +1,39 @@
+export CATALINA_HOME=/home/vagrant/tomcat
+export CATALINA_BASE=/home/vagrant/tomcat
+
+export SOLR_HOME=/apps/drum/solr
+export CATALINA_OPTS="-Dsolr.solr.home=${SOLR_HOME}"
+
+export JAVA_OPTS="-Dsolr.solr.home=${SOLR_HOME}"
+export JAVA_OPTS="-Xmx1024M -Xms1024M -XX:PermSize=256M -XX:MaxPermSize=256M -Dfile.encoding=UTF-8"
+
+start() {
+
+echo "Starting Tomcat"
+
+$CATALINA_HOME/bin/startup.sh
+
+return 0
+}
+
+
+stop() {
+$CATALINA_HOME/bin/shutdown.sh
+echo -n "Stopping Tomcat"
+
+return 0
+}
+
+case $1 in
+
+start)
+start
+;;
+
+stop)
+stop
+;;
+
+esac
+
+exit 0
