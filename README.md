@@ -1,9 +1,9 @@
-Vagrant + DSpace = vagrant-dspace
+Vagrant + Drum = vagrant-drum
 =================================
 
 [Vagrant](http://vagrantup.com) can be used to spin up a temporary Virtual Machine (VM) in a variety of providers ([VirtualBox](http://www.virtualbox.org), [VMWare](http://www.vmware.com/), [Amazon AWS](http://aws.amazon.com/), etc).
 
-Simply put, 'vagrant-dspace' uses Vagrant and [Puppet](http://puppetlabs.com/) to auto-install latest DSpace on the VM provider of your choice (though so far we've mostly tested with VirtualBox).
+Simply put, 'vagrant-drum' uses Vagrant and [Puppet](http://puppetlabs.com/) to auto-install latest DSpace on the VM provider of your choice (though so far we've mostly tested with VirtualBox).
 
 Some example use cases for 'vagrant-dspace':
 * Lets you easily install the latest version of DSpace on a Virtual Machine in order to try it out or test upgrades, etc.
@@ -35,11 +35,10 @@ Table of Contents
 How it Works
 ------------
 
-'vagrant-dspace' does all of the following for you:
+'vagrant-drum' does all of the following for you:
 
 * Spins up an Ubuntu 12.04 VM using Vagrant
-* Installs some of the basic prerequisites for DSpace Development (namely: Git, Java, Maven)
-* Clones DSpace source from GitHub to `~/dspace-src/` (under the default 'vagrant' user account)
+* Installs some of the basic prerequisites for Drum Development (namely: Git, Java, Maven)
 * Installs/Configures PostgreSQL
    * We install [puppetlabs/postgresql](http://forge.puppetlabs.com/puppetlabs/postgresql) (via [librarian-puppet](http://librarian-puppet.com/)),
      and then use that Puppet module to setup PostgreSQL
@@ -47,8 +46,7 @@ How it Works
    * We install [tdonohue/puppet-tomcat](https://github.com/tdonohue/puppet-tomcat/) (via [librarian-puppet](http://librarian-puppet.com/)),
      and then use that Puppet module to setup Tomcat
    * WARNING: We are just pulling down the latest "master" code from tdonohue/puppet-tomcat at this time.
-* Installs DSpace to `~/dspace/` (under the default 'vagrant' user account).
-   * Makes DSpace available via Tomcat (e.g. http://localhost:8080/xmlui/)
+   * Makes Drum available via Tomcat (e.g. http://localhost:8080/xmlui/)
 * Sets up SSH Forwarding, so that you can use your local SSH key(s) on the VM (for development with GitHub)
 * Syncs your local Git settings (name and email from local .gitconfig) to VM (for development with GitHub)
 
@@ -60,6 +58,8 @@ Requirements
 * [Vagrant](http://vagrantup.com/) version 1.3.2 or higher
 * [VirtualBox](https://www.virtualbox.org/)
 * A GitHub account with an associated SSH key:  As vagrant-dspace was built initially as a developer tool, at this time one must have a GitHub account (and an associated SSH key) in order for 'vagrant-dspace' to be able to download DSpace source from GitHub. Please note, we are working on removing this requirement in the future.
+* You will need to download Drum and follow the instructions to build it to /apps/drum present at [UMD-LIB: Drum](https://github.com/umd-lib/drum).
+* You will also need to download and install solr.
 
 Getting Started
 --------------------------

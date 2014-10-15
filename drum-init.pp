@@ -108,9 +108,9 @@ postgresql::server::db { 'dspace411':
 
 exec {
     'restore_db':
-        command     => 'pg_restore -U root -d dspace411 /vagrant/dump.tar.0',
+        command     => 'pg_restore -U root -d dspace411 /vagrant/content/dump.tar.1',
         logoutput   => on_failure,
-        onlyif      => ['test -f /vagrant/dump.tar.0'],
+        onlyif      => ['test -f /vagrant/content/dump.tar.1'],
         #path   => '/usr/bin:/usr/sbin:/bin:/usr/local/bin',
         #refreshonly => true,
         user        => root,
@@ -139,8 +139,29 @@ file {
 
 -> 
 
+file {
+    '/home/vagrant/tomcat/logs/catalina.out':
+        ensure  => file,
+        owner   => 'vagrant',
+        group   => 'vagrant',
+        mode    => '0644';
+}
+
+file {
+    '/home/vagrant/tomcat/conf/context.xml':
+        ensure  => file,
+        source  => '/vagrant/config/context.xml',
+        owner   => 'vagrant',
+        group   => 'vagrant',
+        mode    => '0644';
+}
+
+-> 
+
 exec {
     'start-tomcat':
         command     => '/home/vagrant/tomcat/control start',
         logoutput   => on_failure,
+        owner       => vagrant,
 }
+
