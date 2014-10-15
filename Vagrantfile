@@ -93,12 +93,12 @@ Vagrant.configure("2") do |config|
     # Create a forwarded port mapping which allows access to a specific port
     # within the machine from a port on the host machine. In the example below,
     # accessing "localhost:8080" will access port 8080 on the VM.
-    config.vm.network :forwarded_port, guest: 8080, host: 8080,
+    config.vm.network :forwarded_port, guest: 8080, host: 8085,
       auto_correct: true
 
     # If a port collision occurs (i.e. port 8080 on local machine is in use),
     # then tell Vagrant to use the next available port between 8081 and 8100
-    config.vm.usable_port_range = 8081..8100
+    #config.vm.usable_port_range = 8081..8100
 
     # Turn on SSH forwarding (so that 'vagrant ssh' has access to your local SSH keys, and you can use your local SSH keys to access GitHub, etc.)
     config.ssh.forward_agent = true

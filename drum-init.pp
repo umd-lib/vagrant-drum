@@ -104,6 +104,18 @@ postgresql::server::db { 'dspace411':
   encoding        => 'UNICODE',
 }
 
+-> 
+
+exec {
+    'restore_db':
+        command     => 'pg_restore -U root -d dspace411 /vagrant/dump.tar.0',
+        logoutput   => on_failure,
+        onlyif      => ['test -f /vagrant/dump.tar.0'],
+        #path   => '/usr/bin:/usr/sbin:/bin:/usr/local/bin',
+        #refreshonly => true,
+        user        => root,
+}
+
 
 include tomcat
 
