@@ -106,16 +106,23 @@ postgresql::server::db { 'dspace411':
 
 -> 
 
-exec {
-    'restore_db':
-        command     => 'pg_restore -U root -d dspace411 /vagrant/content/dump.tar.1',
-        logoutput   => on_failure,
-        onlyif      => ['test -f /vagrant/content/dump.tar.1'],
-        #path   => '/usr/bin:/usr/sbin:/bin:/usr/local/bin',
-        #refreshonly => true,
-        user        => root,
+file {
+  '/home/vagrant/.pgpass':
+  ensure =>file,
+  source =>"/vagrant/config/pgpass",
+  owner => 'vagrant',
+  mode => '0600',
 }
 
+->
+
+exec {
+    'restore_db':
+        command     => 'pg_restore -U root -d dspace411 --no-password --clean -h localhost /vagrant/content/dump.tar.0',
+        environment => ['PGPASSFILE=/home/vagrant/.pgpass'],
+        logoutput   => on_failure,
+        onlyif      => ['test -f /vagrant/content/dump.tar.0'],
+}
 
 include tomcat
 
@@ -139,29 +146,8 @@ file {
 
 -> 
 
-file {
-    '/home/vagrant/tomcat/logs/catalina.out':
-        ensure  => file,
-        owner   => 'vagrant',
-        group   => 'vagrant',
-        mode    => '0644';
-}
-
-file {
-    '/home/vagrant/tomcat/conf/context.xml':
-        ensure  => file,
-        source  => '/vagrant/config/context.xml',
-        owner   => 'vagrant',
-        group   => 'vagrant',
-        mode    => '0644';
-}
-
--> 
-
 exec {
     'start-tomcat':
         command     => '/home/vagrant/tomcat/control start',
         logoutput   => on_failure,
-        owner       => vagrant,
 }
-
