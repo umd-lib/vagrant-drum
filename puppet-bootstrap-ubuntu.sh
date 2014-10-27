@@ -60,19 +60,27 @@ if ! test -z `which java`; then
   echo "Java already installed"
 else 
   JAVA_VERSION=1.7.0_71 # Change this to the version you are installing
-  echo "Installing Java($JAVA_VERSION)..."
-  mkdir -p /usr/local/java
-  cp -r /vagrant/content/jdk-7u71-linux-x64.gz /usr/local/java/ # Make sure that the file name is correct.
-  cd /usr/local/java/
-  tar xvzf jdk-7u71-linux-x64.gz
-  export JAVA_HOME=/usr/local/java/jdk$JAVA_VERSION
-  update-alternatives --install "/usr/bin/java" "java" "/usr/local/java/jdk$JAVA_VERSION/bin/java" 1
-  update-alternatives --install "/usr/bin/javac" "javac" "/usr/local/java/jdk$JAVA_VERSION/bin/javac" 1
-  update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/local/java/jdk$JAVA_VERSION/bin/javaws" 1
+  echo "Installing JDK($JAVA_VERSION)..."
+  JDK_INSTALLATION_FILENAME=jdk-7u71-linux-x64.gz
+  if [ ! -e "/vagrant/content/$JDK_INSTALLATION_FILENAME" ]; then
+    echo "JDK installation file ($JDK_INSTALLATION_FILENAME) not present. Exiting..." 1>&2
+    echo -e "Run \"vagrant provision\" after ensuring $JDK_INSTALLATION_FILENAME is present." 1>&2
+    exit 1
+  else
+    echo "$JDK_INSTALLATION_FILENAME found. Installing..."
+    mkdir -p /usr/local/java
+    cp -r /vagrant/content/$JDK_INSTALLATION_FILENAME /usr/local/java/ # Make sure that the file name is correct.
+    cd /usr/local/java/
+    tar xvzf $JDK_INSTALLATION_FILENAME
+    export JAVA_HOME=/usr/local/java/jdk$JAVA_VERSION
+    update-alternatives --install "/usr/bin/java" "java" "/usr/local/java/jdk$JAVA_VERSION/bin/java" 1
+    update-alternatives --install "/usr/bin/javac" "javac" "/usr/local/java/jdk$JAVA_VERSION/bin/javac" 1
+    update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/local/java/jdk$JAVA_VERSION/bin/javaws" 1
 
-  update-alternatives --set java /usr/local/java/jdk$JAVA_VERSION/bin/java
-  update-alternatives --set javac /usr/local/java/jdk$JAVA_VERSION/bin/javac
-  update-alternatives --set javaws /usr/local/java/jdk$JAVA_VERSION/bin/javaws
+    update-alternatives --set java /usr/local/java/jdk$JAVA_VERSION/bin/java
+    update-alternatives --set javac /usr/local/java/jdk$JAVA_VERSION/bin/javac
+    update-alternatives --set javaws /usr/local/java/jdk$JAVA_VERSION/bin/javaws
+  fi
 fi
 
 # Ensure Puppet directory exists & the 'librarian-puppet' "Puppetfile" is copied there.

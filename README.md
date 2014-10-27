@@ -74,7 +74,7 @@ Getting Started
 5. Prerequisite Software and Data:
     * **JDK Installation**: 
         * *Since Oracle requires you to accept a licence, you have to manually download the Oracle JDK from their website [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)* 
-        * Download the Java Development Kit (Version 1.7.0_71) .gz file from Oracle and place it here: `vagrant-drum/content/jdk-7u71-linux-x64.gz`.
+        * Download the Java Development Kit (Default version: 1.7.0_71) .gz file from Oracle and place it here: `vagrant-drum/content/jdk-7u71-linux-x64.gz`.
     * **Postgres Database Restoration**:
         * The application will not work properly unless the postgres database contains the relevant information.
         * The provisioning scripts restore the `dspace411` database from a dump present at `vagrant-drum/content/dump.tar.0`. Put the database dump there to restore it to the dspace411 database.

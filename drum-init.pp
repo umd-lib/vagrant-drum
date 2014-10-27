@@ -140,9 +140,9 @@ tomcat::instance { 'dspace':
 ->
 
 file {
-    ['/home/vagrant/tomcat/control','/home/vagrant/tomcat/control-old']:
+    ['/home/vagrant/tomcat/control']:
         ensure  => file,
-        source  => ['/vagrant/control','/vagrant/control-old'],
+        source  => ['/vagrant/control'],
         owner   => 'vagrant',
         group   => 'vagrant',
         mode    => '0777';
