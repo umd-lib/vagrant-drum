@@ -70,11 +70,19 @@ Getting Started
    * SIDENOTE: Mac OSX / Linux users do NOT need this, as Vagrant's SSH Key Forwarding works properly from Mac OSX & Linux. There's just a bug in using Vagrant + Windows.
    * For Mac OSX / Linux users: Make sure that the ssh keys are added by running `ssh-add -L` otherwise add the key using `ssh-add ~/.ssh/id_rsa`.
 4. Build drum on your local machine according to the instructions in the `SetupInstructionsDrum41.md` file.
-5. `cd [vagrant-dspace]/`
-6. `vagrant up`
+
+5. Prerequisite Software and Data:
+    * **JDK Installation**: 
+        * *Since Oracle requires you to accept a licence, you have to manually download the Oracle JDK from their website [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)* 
+        * Download the Java Development Kit (Version 1.7.0_71) .gz file from Oracle and place it here: `vagrant-drum/content/jdk-7u71-linux-x64.gz`.
+    * **Postgres Database Restoration**:
+        * The application will not work properly unless the postgres database contains the relevant information.
+        * The provisioning scripts restore the `dspace411` database from a dump present at `vagrant-drum/content/dump.tar.0`. Put the database dump there to restore it to the dspace411 database.
+6. `cd [vagrant-drum]/`
+7. `vagrant up`
    * Wait for ~15 minutes while Vagrant & Puppet do all the heavy lifting of setting up the development environment and deploying it to tomcat.
    * There may be times that vagrant will appear to "stall" for several minutes (especially during the Maven build of DSpace). But, don't worry.
-7. Once complete, visit `http://localhost:8085/xmlui/` or `http://localhost:8085/jspui/` in your local web browser to see if it worked! _More info below on what to expect._
+8. Once complete, visit `http://localhost:8085/xmlui/` or `http://localhost:8085/jspui/` in your local web browser to see if it worked! _More info below on what to expect._
    * If you already have something running locally on port 8080, vagrant-dspace will attempt to use the next available port between 8081 and 8100.
    
 The `vagrant up` command will initialize a new VM based on the settings in the `Vagrantfile` in that directory.  

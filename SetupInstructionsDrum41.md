@@ -178,10 +178,9 @@ dspace.hostname = localhost
 dspace.baseUrl = http://localhost:8080
 my.dspace.url = ${dspace.baseUrl}/jspui
 
-# Solr Server location
+# Solr Server location. Set to the private network of the host machine on the private network as defined in the Vagrantfile.
 
 solr.server = http://192.168.50.1:8983/solr
-
 
 # Stackable Authentication Methods
 security.plugins.stack = \
@@ -204,7 +203,7 @@ ldap.bind.password = <ENTER-UMD-LDAP-PASSWORD-HERE>
 
 db.url=jdbc:postgresql://localhost:5432/dspace411
 db.username=dspace
-db.password=dspace
+db.password=
 
 # EMAIL CONFIGURATION (optional in local)
 

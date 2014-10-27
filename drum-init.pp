@@ -21,6 +21,10 @@ package { "rcconf":
   ensure => "installed"
 }
 
+exec { 'apt-get update':
+  command => '/usr/bin/apt-get update',
+}
+
 # Global default path settings for all 'exec' commands
 Exec {
   path => "/usr/bin:/usr/sbin:/bin",
@@ -136,12 +140,21 @@ tomcat::instance { 'dspace':
 ->
 
 file {
-    '/home/vagrant/tomcat/control':
+    ['/home/vagrant/tomcat/control','/home/vagrant/tomcat/control-old']:
         ensure  => file,
-        source  => '/vagrant/control',
+        source  => ['/vagrant/control','/vagrant/control-old'],
         owner   => 'vagrant',
         group   => 'vagrant',
         mode    => '0777';
+}
+
+-> 
+
+file {
+  '/home/vagrant/tomcat/logs/catalina.out':
+  ensure => file,
+  owner => 'vagrant',
+  mode  => '0755',
 }
 
 -> 

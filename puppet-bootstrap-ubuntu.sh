@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# This bootstraps Puppet & Librarian-Puppet on Ubuntu 12.04 LTS.
+# This bootstraps Java, Puppet & Librarian-Puppet on Ubuntu 12.04 LTS.
 # Based on the script at: https://github.com/hashicorp/puppet-bootstrap/
 # 
 # However, we've updated it to also install and configure librarian-puppet
@@ -54,6 +54,26 @@ cp /vagrant/puppet.conf $PUPPET_DIR
 echo "Installing Git..."
 apt-get install -y git >/dev/null
 echo "Git installed!"
+
+# Install Java
+if ! test -z `which java`; then
+  echo "Java already installed"
+else 
+  JAVA_VERSION=1.7.0_71 # Change this to the version you are installing
+  echo "Installing Java($JAVA_VERSION)..."
+  mkdir -p /usr/local/java
+  cp -r /vagrant/content/jdk-7u71-linux-x64.gz /usr/local/java/ # Make sure that the file name is correct.
+  cd /usr/local/java/
+  tar xvzf jdk-7u71-linux-x64.gz
+  export JAVA_HOME=/usr/local/java/jdk$JAVA_VERSION
+  update-alternatives --install "/usr/bin/java" "java" "/usr/local/java/jdk$JAVA_VERSION/bin/java" 1
+  update-alternatives --install "/usr/bin/javac" "javac" "/usr/local/java/jdk$JAVA_VERSION/bin/javac" 1
+  update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/local/java/jdk$JAVA_VERSION/bin/javaws" 1
+
+  update-alternatives --set java /usr/local/java/jdk$JAVA_VERSION/bin/java
+  update-alternatives --set javac /usr/local/java/jdk$JAVA_VERSION/bin/javac
+  update-alternatives --set javaws /usr/local/java/jdk$JAVA_VERSION/bin/javaws
+fi
 
 # Ensure Puppet directory exists & the 'librarian-puppet' "Puppetfile" is copied there.
 if [ ! -d "$PUPPET_DIR" ]; then

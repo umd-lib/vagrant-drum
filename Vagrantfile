@@ -38,6 +38,17 @@ vb_memory = 2048
 
 ####################################  
 
+def ensure_sub_project(name)
+  if !File.exists?(File.expand_path("/content/#{name}", __FILE__))
+    # you could raise or do other ruby magic, or shell out (for a bash script)
+    system('echo -n "This is not present"', name)
+  else
+    system('echo -n "This is not present"', name)
+   end
+end
+
+ensure_sub_project('dump.tar.2')
+
 # Actual Vagrant configs
 Vagrant.configure("2") do |config|
     # All Vagrant configuration is done here. The most common configuration
@@ -84,8 +95,8 @@ Vagrant.configure("2") do |config|
     # BEGIN Landrush configuration ###########################################
 
 
-    if Vagrant.has_plugin?('landrush')
-        config.landrush.enable
+    if Vagrant.has_plugin?('landrush') 
+       config.landrush.enable
     end
 
     # END Landrush configuration ###########################################
