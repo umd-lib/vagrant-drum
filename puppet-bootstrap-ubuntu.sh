@@ -56,12 +56,13 @@ apt-get install -y git >/dev/null
 echo "Git installed!"
 
 # Install Java
+JAVA_VERSION=1.7.0_71 # Change this to the version you are installing
+JDK_INSTALLATION_FILENAME=jdk-7u71-linux-x64.gz # Change to correspond to JAVA_VERSION.
+
 if ! test -z `which java`; then
   echo "Java already installed"
 else 
-  JAVA_VERSION=1.7.0_71 # Change this to the version you are installing
   echo "Installing JDK($JAVA_VERSION)..."
-  JDK_INSTALLATION_FILENAME=jdk-7u71-linux-x64.gz
   if [ ! -e "/vagrant/content/$JDK_INSTALLATION_FILENAME" ]; then
     echo "JDK installation file ($JDK_INSTALLATION_FILENAME) not present. Exiting..." 1>&2
     echo -e "Run \"vagrant provision\" after ensuring $JDK_INSTALLATION_FILENAME is present." 1>&2
@@ -71,7 +72,7 @@ else
     mkdir -p /usr/local/java
     cp -r /vagrant/content/$JDK_INSTALLATION_FILENAME /usr/local/java/ # Make sure that the file name is correct.
     cd /usr/local/java/
-    tar xvzf $JDK_INSTALLATION_FILENAME
+    tar xzf $JDK_INSTALLATION_FILENAME > dump.log
     export JAVA_HOME=/usr/local/java/jdk$JAVA_VERSION
     update-alternatives --install "/usr/bin/java" "java" "/usr/local/java/jdk$JAVA_VERSION/bin/java" 1
     update-alternatives --install "/usr/bin/javac" "javac" "/usr/local/java/jdk$JAVA_VERSION/bin/javac" 1

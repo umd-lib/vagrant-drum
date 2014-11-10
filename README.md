@@ -69,8 +69,18 @@ Getting Started
    * OR, manually generate a new `~/.ssh/github_rsa` key and associate it with your GitHub Account. [GitHub has detailed instructions on how to do this.](https://help.github.com/articles/generating-ssh-keys)
    * SIDENOTE: Mac OSX / Linux users do NOT need this, as Vagrant's SSH Key Forwarding works properly from Mac OSX & Linux. There's just a bug in using Vagrant + Windows.
    * For Mac OSX / Linux users: Make sure that the ssh keys are added by running `ssh-add -L` otherwise add the key using `ssh-add ~/.ssh/id_rsa`.
-4. Build drum on your local machine according to the instructions in the `SetupInstructionsDrum41.md` file.
-
+4. Install the required software and build Drum on your local machine according to the instructions here: [Drum Installation Documentation](https://github.com/umd-lib/drum/blob/drum-develop/dspace/docs/Drum41LocalInstallation.md). Only the steps in the following sections of the document need to be performed.
+    * Oracle Java JDK 7
+    * Apache Maven 3.x (Java build tool)
+    * Apache Ant 1.8 or later (Java build tool)
+    * Build the Installation Package
+    * Install DRUM code
+    * Setup Solr Environment for Drum
+        * `cd solr-env/jetty`
+        * `mvn jetty:run`
+    * Deploy Web Applications
+    * Create directories to be accessed by webapps
+    
 5. Prerequisite Software and Data:
     * **JDK Installation**: 
         * *Since Oracle requires you to accept a licence, you have to manually download the Oracle JDK from their website [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)* 
@@ -83,8 +93,7 @@ Getting Started
    * Wait for ~15 minutes while Vagrant & Puppet do all the heavy lifting of setting up the development environment and deploying it to tomcat.
    * There may be times that vagrant will appear to "stall" for several minutes (especially during the Maven build of DSpace). But, don't worry.
 8. Once complete, visit `http://localhost:8085/xmlui/` or `http://localhost:8085/jspui/` in your local web browser to see if it worked! _More info below on what to expect._
-   * If you already have something running locally on port 8080, vagrant-dspace will attempt to use the next available port between 8081 and 8100.
-   
+      
 The `vagrant up` command will initialize a new VM based on the settings in the `Vagrantfile` in that directory.  
 
 Once complete, you'll have a fresh Ubuntu VM that you can SSH into by simply typing `vagrant ssh`. Since SSH Forwarding is enabled,
@@ -93,11 +102,11 @@ that Ubuntu VM should have access to your local SSH keys, which allows you to im
 What will you get?
 ------------------
 
-* A running instance of [DSpace 'master'](https://github.com/DSpace/DSpace), on top of latest PostgreSQL and Tomcat 7 (and using Java OpenJDK 7 by default)
-   * You can visit this instance at `http://localhost:8080/xmlui/` or `http://localhost:8080/jspui/` from your local web browser 
-   * If you install and configure the [Landrush plugin](https://github.com/phinze/landrush) for Vagrant, you can instead visit http://dspace.vagrant.dev:8080/xmlui/ or http://dspace.vagrant.dev:8080/jspui/
+* A running instance of [DRUM](https://github.com/umd-lib/drum), on top of latest PostgreSQL and Tomcat 7 (and using Oracle JDK)
+   * You can visit this instance at `http://localhost:8085/xmlui/` or `http://localhost:8085/jspui/` from your local web browser 
+   * If you install and configure the [Landrush plugin](https://github.com/phinze/landrush) for Vagrant, you can instead visit http://dspace.vagrant.dev:8085/xmlui/ or http://drum.vagrant.dev:8085/jspui/
    * An initial Administrator account is also auto-created:
-       * Login: `dspacedemo+admin@gmail.com` , Pwd: 'vagrant'
+       * Login: `drumdemo+admin@gmail.com` , Pwd: 'vagrant'
 * All "out of the box" DSpace webapps running out of `/apps/drum`
 * Tomcat 7 instance installed at `~/tomcat/`
 * Enough to get you started with developing/building/using DSpace (or debug issues with the DSpace build process, if any pop up)
@@ -196,16 +205,6 @@ If you already have a newer version of the landrush plugin installed, you may re
     vagrant plugin install landrush --plugin-version 0.12.0
 ```
  
-
-What's Next?
-------------
-
-Here are a few things we'd like to explore in future version of vagrant-drum:
-
-* use a CentOS base machine, and make all Puppet provisioning modules compatible with a Yum-based package manager. The current vagrant-dspace project relies on a package only available on Debian-based systems. We'd really like to avoid that dependency in the future.
-* Oracle database version (Hardy is busy working on this already, [contact him](https://github.com/hardyoyo/) if you'd like to help).
-* [Multi-machine](http://docs.vagrantup.com/v2/multi-machine/index.html) configuration, to demonstrate proper configuration of multi-machine installations of DSpace. One possibility would be to set up a seperate Elastic Search or Solr box, and send usage statistics to that external box. Another possibility would be to explore using an alternate UI based on the REST-API. We recommend that you use the Land Rush Vagrant plugin if you're serrious about exploring a multi-machine Vagrant setup.
-
 Tools we use to make this all work
 ----------------------------------
 

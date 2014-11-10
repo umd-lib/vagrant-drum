@@ -3,7 +3,7 @@
 git_repo          : 'git@github.com:umd-lib/drum'
 git_branch        : 'master'
 mvn_version       : '3.0.5'
-mvn_params        : '-Denv=vagrant'
+mvn_params        : '-Denv=local'
 
 # NOTE: if you change 'git_branch' above, you MAY need to modify this 'ant_installer_dir'
 # setting. It must be set to the directory where the Ant-based installer ends up, after
