@@ -30,13 +30,24 @@ java = "7"
 # (Additional options are in the :virtualbox provider settings below.)
 #--------------------------
 # Name of the VM created in VirtualBox (Also the name of the subfolder in ~/VirtualBox VMs/ where this VM is normally kept)
-vb_name = "dspace-dev"
+vb_name = "drum-dev"
 
 # How much memory to provide to VirtualBox (in MB)
 # Provide 2GB of memory by default
-vb_memory = 2048  
+vb_memory = 2048
 
 ####################################  
+
+def ensure_sub_project(name)
+  if !File.exists?(File.expand_path("/content/#{name}", __FILE__))
+    # you could raise or do other ruby magic, or shell out (for a bash script)
+    system('echo -n "This is not present"', name)
+  else
+    system('echo -n "This is not present"', name)
+   end
+end
+
+ensure_sub_project('dump.tar.2')
 
 # Actual Vagrant configs
 Vagrant.configure("2") do |config|
@@ -50,6 +61,7 @@ Vagrant.configure("2") do |config|
     # BEGIN Vagrant-Cachier configuration ####################################
     # check for the presence of the Vagrant-Cachier plugin before attempting
     # these configurations
+    if Vagrant.has_plugin?("vagrant-cachier")
        # Use a vagrant-cachier cache if one is detected
        config.cache.auto_detect = true
 
@@ -64,7 +76,7 @@ Vagrant.configure("2") do |config|
        config.cache.enable :generic, {
              "maven" => { cache_dir: "/home/vagrant/.m2/repository" },
        }
-
+    end
     # END Vagrant-Cachier configuration #######################################
 
     # The url from where the 'config.vm.box' box will be fetched if it
@@ -72,10 +84,10 @@ Vagrant.configure("2") do |config|
     config.vm.box_url = "http://github.com/DSpace/vagrantbox-ubuntu/releases/download/v1.1/precise64.box"
 
     # define this box so Vagrant doesn't call it "default"
-    config.vm.define "vds"
+    config.vm.define "drumvm"
 
     # Hostname for virtual machine
-    config.vm.hostname = "dspace.vagrant.dev"
+    config.vm.hostname = "drum.vagrant.dev"
 
     # configure a private network and set this guest's IP to 192.168.50.2
     config.vm.network "private_network", ip: "192.168.50.2"
@@ -83,8 +95,8 @@ Vagrant.configure("2") do |config|
     # BEGIN Landrush configuration ###########################################
 
 
-    if Vagrant.has_plugin?('landrush')
-        config.landrush.enable
+    if Vagrant.has_plugin?('landrush') 
+       config.landrush.enable
     end
 
     # END Landrush configuration ###########################################
@@ -92,15 +104,18 @@ Vagrant.configure("2") do |config|
     # Create a forwarded port mapping which allows access to a specific port
     # within the machine from a port on the host machine. In the example below,
     # accessing "localhost:8080" will access port 8080 on the VM.
-    config.vm.network :forwarded_port, guest: 8080, host: 8080,
+    config.vm.network :forwarded_port, guest: 8080, host: 8085,
       auto_correct: true
 
     # If a port collision occurs (i.e. port 8080 on local machine is in use),
     # then tell Vagrant to use the next available port between 8081 and 8100
-    config.vm.usable_port_range = 8081..8100
+    #config.vm.usable_port_range = 8081..8100
 
     # Turn on SSH forwarding (so that 'vagrant ssh' has access to your local SSH keys, and you can use your local SSH keys to access GitHub, etc.)
     config.ssh.forward_agent = true
+
+    # configure the synced folders between the hosts and the guests
+    config.vm.synced_folder "/apps/drum", "/apps/drum"
 
     # THIS NEXT PART IS TOTAL HACK (only necessary for running Vagrant on Windows)
     # Windows currently doesn't support SSH Forwarding when running Vagrant's "Provisioning scripts" 
@@ -177,7 +192,7 @@ Vagrant.configure("2") do |config|
             "java_version"  => "#{java}",        # version of Java (used by 'dspace-init.pp')
         }
         puppet.manifests_path = "."
-        puppet.manifest_file = "dspace-init.pp"
+        puppet.manifest_file = "drum-init.pp"
         puppet.options = "--verbose"
         puppet.hiera_config_path = "hiera.yaml"
     end

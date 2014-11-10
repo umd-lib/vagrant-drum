@@ -1,8 +1,8 @@
-# DSpace initialization script
+# Drum initialization script
 #
 # This Puppet script does the following:
 # - installs Java, Maven, Ant
-# - installs Git & clones DSpace source code
+# - starts a tomcat instance running Drum
 #
 # Tested on:
 # - Ubuntu 12.04
@@ -19,6 +19,10 @@ Package {
 # Ensure the rcconf package is installed, we'll use it later to set runlevels of services
 package { "rcconf":
   ensure => "installed"
+}
+
+exec { 'apt-get update':
+  command => '/usr/bin/apt-get update',
 }
 
 # Global default path settings for all 'exec' commands
@@ -46,15 +50,7 @@ exec {"apt-get-update":
 }
 
 # Install DSpace pre-requisites (from DSpace module's init.pp)
-# If the global fact "java_version" doesn't exist, use default value in 'dspace' module
-if $::java_version == undef {
-    include dspace
-}
-else { # Otherwise, pass the value of $::java_version to the 'dspace' module
-    class { 'dspace':
-       java_version => $::java_version,
-    }
-}
+include drum
 
  # Install Maven
 class { "maven::maven":
@@ -85,10 +81,51 @@ class { 'postgresql::server':
 
 ->
 
-# Create a 'dspace' database
-postgresql::server::db { 'dspace':
-  user     => 'dspace',
-  password => 'dspace'
+postgresql::server::role{'root':
+  createdb        => true,
+  createrole      => true,
+  login           => true,
+  superuser       => true,
+  password_hash   => postgresql_password('root','root'),
+}
+
+->
+
+postgresql::server::role{'dspace':
+  createdb        => true,
+  createrole      => false,
+  login           => true,
+  superuser       => false,
+  password_hash   => postgresql_password('dspace',''),
+}
+
+->
+
+# Create a 'dspace411' database
+postgresql::server::db { 'dspace411':
+  user            => 'dspace',
+  password        => '',
+  encoding        => 'UNICODE',
+}
+
+-> 
+
+file {
+  '/home/vagrant/.pgpass':
+  ensure =>file,
+  source =>"/vagrant/config/pgpass",
+  owner => 'vagrant',
+  mode => '0600',
+}
+
+->
+
+exec {
+    'restore_db':
+        command     => 'pg_restore -U root -d dspace411 --no-password --clean -h localhost /vagrant/content/dump.tar.0',
+        environment => ['PGPASSFILE=/home/vagrant/.pgpass'],
+        logoutput   => on_failure,
+        onlyif      => ['test -f /vagrant/content/dump.tar.0'],
 }
 
 include tomcat
@@ -96,46 +133,34 @@ include tomcat
 # Create a new Tomcat instance
 tomcat::instance { 'dspace':
    owner   => "vagrant",
-   appBase => "/home/vagrant/dspace/webapps", # Tell Tomcat to load webapps from this directory
+   appBase => "/apps/drum/webapps", # Tell Tomcat to load webapps from this directory
    ensure  => present,
 }
 
 ->
 
-# Kickoff a DSpace installation for the 'vagrant' default user,
-# using the specified GitHub repository & branch.
-dspace::install { vagrant-dspace:
-        owner             => "vagrant",
-        version           => "4.0-SNAPSHOT",
-       require    => [Postgresql::Server::Db['dspace'],Tomcat::Instance['dspace']]  # Require that PostgreSQL and Tomcat are setup
+file {
+    ['/home/vagrant/tomcat/control']:
+        ensure  => file,
+        source  => ['/vagrant/control'],
+        owner   => 'vagrant',
+        group   => 'vagrant',
+        mode    => '0777';
 }
 
 -> 
 
-# For convenience in troubleshooting Tomcat, let's install Psi-probe
-exec {"Download and install the Psi-probe war":
-   command   => "wget http://psi-probe.googlecode.com/files/probe-2.3.3.zip && unzip probe-2.3.3.zip && rm probe-2.3.3.zip",
-   cwd       => "/home/vagrant/tomcat/webapps",
-   creates   => "/home/vagrant/tomcat/webapps/probe.war",
-   user      => "vagrant",
-   logoutput => true,
-}
- 
-->
- 
-# Set the runlevels of tomcat7-vagrant
-# AND start the tomcat7-vagrant service
-service {"tomcat7-vagrant":
-   enable => "true",
-   ensure => "running",
+file {
+  '/home/vagrant/tomcat/logs/catalina.out':
+  ensure => file,
+  owner => 'vagrant',
+  mode  => '0755',
 }
 
-->
+-> 
 
-# add a context fragment file for Psi-probe, and restart tomcat7-vagrant
-file { "/home/vagrant/tomcat/conf/Catalina/localhost/probe.xml" :
-   ensure  => file,
-   owner   => vagrant,
-   group   => vagrant,
-   content => template("dspace/probe.xml.erb"),
+exec {
+    'start-tomcat':
+        command     => '/home/vagrant/tomcat/control start',
+        logoutput   => on_failure,
 }
