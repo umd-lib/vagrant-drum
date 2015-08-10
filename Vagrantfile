@@ -172,6 +172,8 @@ Vagrant.configure("2") do |config|
     # This has to be done before the puppet provisioning so that the modules are available when puppet tries to parse its manifests.
     config.vm.provision :shell, :path => "puppet-bootstrap-ubuntu.sh"
 
+    config.vm.provision :shell, :inline => "sudo initctl emit vagrant-ready", run: "always"
+
     # Call our Puppet initialization script
     config.vm.provision :shell, :inline => "echo '   > > > beginning puppet provisioning, this will appear to hang...'"
     config.vm.provision :shell, :inline => "echo '   > > > PATIENCE! output is only shown after each step completes...'"

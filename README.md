@@ -63,35 +63,54 @@ Getting Started
 
 1. Install [Vagrant](http://vagrantup.com) (Only tested with the [VirtualBox](https://www.virtualbox.org/) provider so far)
 2. Clone a copy of 'vagrant-drum' to your local computer
-   * `git clone git@github.com:umd-lib/drum`
+   * `git clone git@github.com:umd-lib/vagrant-drum`
 3. _WINDOWS ONLY_ : Any users of Vagrant from Windows MUST create a GitHub-specific SSH Key (at `~/.ssh/github_rsa`) which is then connected to your GitHub Account. There are two easy ways to do this:
    * Install [GitHub for Windows](http://windows.github.com/) - this will automatically generate a new `~/.ssh/github_rsa` key.
    * OR, manually generate a new `~/.ssh/github_rsa` key and associate it with your GitHub Account. [GitHub has detailed instructions on how to do this.](https://help.github.com/articles/generating-ssh-keys)
    * SIDENOTE: Mac OSX / Linux users do NOT need this, as Vagrant's SSH Key Forwarding works properly from Mac OSX & Linux. There's just a bug in using Vagrant + Windows.
    * For Mac OSX / Linux users: Make sure that the ssh keys are added by running `ssh-add -L` otherwise add the key using `ssh-add ~/.ssh/id_rsa`.
-4. Install the required software and build Drum on your local machine according to the instructions here: [Drum Installation Documentation](https://github.com/umd-lib/drum/blob/drum-develop/dspace/docs/Drum41LocalInstallation.md). Only the steps in the following sections of the document need to be performed.
+   
+4. Perform the following steps:
+    * Clone Drum using: `git clone git@github.com:umd-lib/drum`
+
+5. Install the required software and build Drum on your local machine according to the instructions here: [Drum Installation Documentation](https://github.com/umd-lib/drum/blob/drum-develop/dspace/docs/Drum41LocalInstallation.md). Only the steps in the following sections of the above document need to be performed.
     * Oracle Java JDK 7
     * Apache Maven 3.x (Java build tool)
     * Apache Ant 1.8 or later (Java build tool)
-    * Build the Installation Package
+    * Initial Configuration
+        * Make the following changes to local.properties:
+        ```
+        solr.server = http://192.168.50.1:8983/solr 
+        ```
+    * Build the Installation Package.
     * Install DRUM code
-    * Setup Solr Environment for Drum
+    * Setup Solr Environment for Drum and make sure that it is running before you start the vagrant up.
         * `cd solr-env/jetty`
         * `mvn jetty:run`
-    * Deploy Web Applications
     * Create directories to be accessed by webapps
+
+    These are the sections that can be ignored:
     
 5. Prerequisite Software and Data:
     * **JDK Installation**: 
         * *Since Oracle requires you to accept a licence, you have to manually download the Oracle JDK from their website [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)* 
-        * Download the Java Development Kit (Default version: 1.7.0_71) .gz file from Oracle and place it here: `vagrant-drum/content/jdk-7u71-linux-x64.gz`.
+        * Download the Java Development Kit (Default version: 1.7.0_71) .gz file for Linux x64 from Oracle and place it here: `vagrant-drum/content/jdk-7u71-linux-x64.gz`.
     * **Postgres Database Restoration**:
         * The application will not work properly unless the postgres database contains the relevant information.
         * The provisioning scripts restore the `dspace411` database from a dump present at `vagrant-drum/content/dump.tar.0`. Put the database dump there to restore it to the dspace411 database.
-6. `cd [vagrant-drum]/`
-7. `vagrant up`
-   * Wait for ~15 minutes while Vagrant & Puppet do all the heavy lifting of setting up the development environment and deploying it to tomcat.
-   * There may be times that vagrant will appear to "stall" for several minutes (especially during the Maven build of DSpace). But, don't worry.
+
+6. Make sure the following are running and in place as mentioned above:
+    * solr
+    * the Oracle JDK for linux x64
+    * The database dump (dump.tar.0)
+    
+    Once that is done, run `vagrant up`.
+    
+    * Wait for ~15 minutes while Vagrant & Puppet do all the heavy lifting of setting up the development environment and deploying it to tomcat.
+
+7. `cd [vagrant-drum]/`
+
+
 8. Once complete, visit `http://localhost:8085/xmlui/` or `http://localhost:8085/jspui/` in your local web browser to see if it worked! _More info below on what to expect._
       
 The `vagrant up` command will initialize a new VM based on the settings in the `Vagrantfile` in that directory.  
@@ -136,6 +155,10 @@ Here's some common activities which you may wish to perform in `vagrant-dspace`:
    * `sudo service postgresql restart`
 * **Connecting to DSpace PostgreSQL database**
    * `psql -h localhost -U dspace dspace`  (Password is "dspace")
+* **Using the fakeSMTP server**
+    * the fakeSMTP server from [here](https://nilhcem.github.io/FakeSMTP/) is installed during provisioning. It is set up at 127.0.0.1:2525.You can use the following commands:
+    * To start: `sudo service fakesmtp start`
+    * To stop: `sudo service fakesmtp stop`
 
 
 How to Tweak Things to your Liking?

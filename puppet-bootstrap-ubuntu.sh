@@ -84,6 +84,27 @@ else
   fi
 fi
 
+# Install zip and unzip, needed to extract FakeSMTP
+echo "Installing zip and unzip"
+apt-get install -y zip unzip > /dev/null
+echo "Zip and unzip installed."
+
+# FakeSMTP to test email related functionality. Source: https://nilhcem.github.io/FakeSMTP/
+if [ ! -e /vagrant/content/fakeSMTP-latest.zip ]; then
+  echo "Downloading fakeSMTP"
+  wget -O /vagrant/content/fakeSMTP-latest.zip http://nilhcem.github.com/FakeSMTP/downloads/fakeSMTP-latest.zip 2>/dev/null
+  echo "Unzipping.."
+  unzip /vagrant/content/fakeSMTP-latest.zip -d /usr/share/java/ 
+else
+  echo "fakeSMTP found. Unzipping.."
+  unzip /vagrant/content/fakeSMTP-latest.zip -d /usr/share/java/
+fi
+
+cp /vagrant/config/fakesmtp.conf /etc/init/fakesmtp.conf
+
+export JAVA_HOME=/usr/local/java/jdk$JAVA_VERSION
+export PATH=$JAVA_HOME/bin:/apps/ant/bin:$PATH
+
 # Ensure Puppet directory exists & the 'librarian-puppet' "Puppetfile" is copied there.
 if [ ! -d "$PUPPET_DIR" ]; then
   mkdir -p $PUPPET_DIR
